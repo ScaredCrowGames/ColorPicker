@@ -22,7 +22,7 @@ Add this to your Unity project's `Packages/manifest.json`:
 
 Window > Package Manager > Add package from git url...
 ```link
-https://github.com/scaredcrowgames/colorpicker.git
+https://github.com/scaredcrowgames/colorpicker.git?path=src
 ```
 
 ## Palette Texture Generator
