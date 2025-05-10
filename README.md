@@ -15,7 +15,7 @@ A simple color picker tool for Unity.
 Add this to your Unity project's `Packages/manifest.json`:
 
 ```json
-"com.scaredcrowgames.colorpicker": "https://github.com/scaredcrowgames/color-picker.git"
+"com.scaredcrowgames.colorpicker": "https://github.com/scaredcrowgames/colorpicker.git"
 ```
 
 ### Or use the Package Manager:
