@@ -51,7 +51,7 @@ colorPicker.ColorSelectionChanged += color => {
     Debug.Log("Selected color: " + color);
 };
 ```
-Or read current selected color dicreclty:
+Or read current selected color directly:
 ```csharp
 var currentSelectedColor = colorPicker.CurrentSelectedColor;
 ```
