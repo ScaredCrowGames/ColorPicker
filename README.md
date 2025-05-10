@@ -15,12 +15,15 @@ A simple color picker tool for Unity.
 Add this to your Unity project's `Packages/manifest.json`:
 
 ```json
-"com.scaredcrowgames.colorpicker": "https://github.com/scaredcrowgames/color-picker.git"
+"com.scaredcrowgames.colorpicker": "https://github.com/scaredcrowgames/colorpicker.git"
 ```
 
 ### Or use the Package Manager:
 
-Window > Package Manager > Add package from git url... > https://github.com/scaredcrowgames/colorpicker.git
+Window > Package Manager > Add package from git url...
+```link
+https://github.com/scaredcrowgames/colorpicker.git
+```
 
 ## Palette Texture Generator
 Access from the top menu: Tools > ColorPickerGenerator
