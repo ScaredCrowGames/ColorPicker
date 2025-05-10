@@ -29,9 +29,14 @@ Features:
 ## 🎮 How to
 The ColorPicker.cs (MonoBehaviour) allows to select colors from the palette at runtime.
 
-Setup:
-1. Assign a UI Image with your palette texture to _paletteImage
-2. Assign a RectTransform for _outline to highlight the selection
+You can use ready-to-use prefab from Samples (skip the section above if so).
+
+### Manual setup:
+1. Generate (see above) or import your color palette texture
+2. Create UI image and assign the texture
+3. Create child image (raycast target should be disabled, rect middle-center, size is no matter)
+4. Assign outline texture to child image
+5. Attach ColorPicker component to any object and assign palette image and outline rect in Inspector.
 
 Optionally subscribe to ColorSelectionChanged
 
@@ -40,6 +45,12 @@ colorPicker.ColorSelectionChanged += color => {
     Debug.Log("Selected color: " + color);
 };
 ```
+Or read current selected color dicreclty:
+```csharp
+var currentSelectedColor = colorPicker.CurrentSelectedColor;
+```
+> [!NOTE]
+> Default color before the very first selection is white-transparent
 
 ## 🧪 Demo
 The package includes a full demo:
