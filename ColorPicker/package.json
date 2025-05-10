@@ -1,0 +1,22 @@
+{
+  "name": "com.scaredcrowgames.colorpicker",
+  "version": "1.0.0",
+  "displayName": "Color Picker",
+  "description": "A simple and configurable color picker tool for Unity with a palette texture generator",
+  "unity": "2021.3",
+  "author": {
+    "name": "Scared Crow Games",
+    "email": "scared.crow.games.official@gmail.com"
+  },
+  "keywords": [
+    "color",
+	"picker"
+  ],
+  "samples": [
+    {
+      "displayName": "Color Picker Demo",
+      "description": "A sample scene showing how to use the Color Picker.",
+      "path": "Samples~"
+    }
+  ]
+}
