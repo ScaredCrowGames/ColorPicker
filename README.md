@@ -64,6 +64,6 @@ var currentSelectedColor = colorPicker.CurrentSelectedColor;
 ## Samples
 The package includes a full demo:
 
-📁 Samples~/ contains ColorPickerDemo.unity and ready-to-use prefab
+📁 Samples~/ contains ColorPickerDemo.unity, palette and outline images, preset example and ready-to-use prefab
 
 Import it from Package Manager > Samples
