@@ -23,7 +23,7 @@ https://github.com/scaredcrowgames/colorpicker.git?path=src
 2. Or add this to your Unity project's `Packages/manifest.json`:
 
 ```json
-"com.scaredcrowgames.colorpicker": "https://github.com/scaredcrowgames/colorpicker.git"
+"com.scaredcrowgames.colorpicker": "https://github.com/scaredcrowgames/colorpicker.git?path=src"
 ```
 ## Palette Texture Generator
 Access from the top menu: Tools > ColorPickerGenerator
