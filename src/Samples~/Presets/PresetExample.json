@@ -1,5 +1,7 @@
 {
-    "name": "NewColorPreset2",
+    "name": "PresetExample",
+    "columns": 12,
+    "textureSize": 512,
     "colors": [
         {
             "r": 0.9960784912109375,
