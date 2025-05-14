@@ -66,4 +66,6 @@ var currentSelectedColor = colorPicker.CurrentSelectedColor;
 > [!NOTE]
 > Default color before the very first selection is white-transparent
 
-
+## Contact us
+> [!TIP]
+> All discussions, requests and bug reports can be left in the corresponding [Discord channel](https://discord.gg/kWvJeWHPZ9) or here in Discussions
