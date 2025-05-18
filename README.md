@@ -47,7 +47,7 @@ Features:
 ## Samples
 The package includes:
 
-📁 Samples~/ contains ColorPickerDemo.unity, palette and outline images, preset example and ready-to-use prefab
+📁 Samples/ contains ColorPickerDemo.unity, palette and outline images, preset example and ready-to-use prefab
 
 Import it from Package Manager > Samples
 
