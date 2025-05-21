@@ -7,9 +7,11 @@ namespace ColorPicker
 {
     public class ColorPicker : MonoBehaviour, IPointerClickHandler
     {
-        public event Action<Color> ColorSelectionChanged;
+        private static readonly Color DefaultColor = new(1, 1, 1, 0);
+        private static readonly Vector2 CenterPivot = new(0.5f, 0.5f);
 
-        public Color CurrentSelectedColor { get; private set; } = new (1, 1, 1, 0);
+        public event Action<Color> ColorSelectionChanged;
+        public Color CurrentSelectedColor { get; private set; } = DefaultColor;
 
         [SerializeField] private Image _paletteImage;
         [SerializeField] private RectTransform _outline;
@@ -17,16 +19,11 @@ namespace ColorPicker
         [SerializeField, Range(0, 1)] private float _colorAlphaTolerance = 0.1f;
 
         private Texture2D _texture;
-        private RectTransform _paletteRectTransform;
-        private Rect _paletteSpriteRect;
+        private RectTransform _rectTransform;
+        private Rect _spriteRect;
 
         private void Start()
         {
-            if (_outline && CurrentSelectedColor.a == 0)
-            {
-                _outline.gameObject.SetActive(false);
-            }
-
             if (!_paletteImage?.sprite)
             {
                 Debug.LogError("Palette image or sprite not assigned.");
@@ -36,30 +33,65 @@ namespace ColorPicker
             }
 
             _texture = _paletteImage.sprite.texture;
-            _paletteRectTransform = _paletteImage.rectTransform;
-            _paletteSpriteRect = _paletteImage.sprite.rect;
+            _spriteRect = _paletteImage.sprite.rect;
+            _rectTransform = _paletteImage.rectTransform;
 
             _paletteImage.alphaHitTestMinimumThreshold = _colorAlphaTolerance;
+
+            if (_outline)
+            {
+                _outline.gameObject.SetActive(false);
+            }
         }
 
         public void OnPointerClick(PointerEventData eventData)
         {
             if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                _paletteRectTransform,
-                eventData.position,
-                eventData.pressEventCamera,
-                out var localPoint))
+                    _rectTransform, eventData.position, eventData.pressEventCamera, out var localPoint))
             {
                 return;
             }
 
-            var rect = _paletteRectTransform.rect;
-            var spriteSize = _paletteSpriteRect.size;
+            var uv = _paletteImage.preserveAspect
+                ? GetUVWithPreserveAspect(localPoint)
+                : GetUVWithoutPreserveAspect(localPoint);
+
+            if (uv == null)
+            {
+                return;
+            }
+
+            var texCoords = GetTextureCoords(uv.Value);
+
+            if (!IsInTexture(texCoords))
+            {
+                return;
+            }
+
+            var color = _texture.GetPixel(texCoords.x, texCoords.y);
+
+            if (color.a < _colorAlphaTolerance)
+            {
+                return;
+            }
+
+            var bounds = FloodFillBounds(texCoords, color);
+
+            DrawOutline(bounds, uvSpace: uv.Value);
+
+            CurrentSelectedColor = color;
+            ColorSelectionChanged?.Invoke(CurrentSelectedColor);
+        }
+
+        private Vector2? GetUVWithPreserveAspect(Vector2 localPoint)
+        {
+            var rect = _rectTransform.rect;
+            var pivot = _rectTransform.pivot;
+            var spriteSize = _spriteRect.size;
             var spriteRatio = spriteSize.x / spriteSize.y;
             var rectRatio = rect.width / rect.height;
 
-            var drawWidth = rect.width;
-            var drawHeight = rect.height;
+            float drawWidth = rect.width, drawHeight = rect.height;
 
             if (spriteRatio > rectRatio)
             {
@@ -70,75 +102,100 @@ namespace ColorPicker
                 drawWidth = drawHeight * spriteRatio;
             }
 
-            var offsetX = (rect.width - drawWidth) * 0.5f;
-            var offsetY = (rect.height - drawHeight) * 0.5f;
+            var offset = new Vector2((rect.width - drawWidth) / 2, (rect.height - drawHeight) / 2);
+            var pixel = new Vector2(localPoint.x + rect.width * pivot.x - offset.x, localPoint.y + rect.height * pivot.y - offset.y);
 
-            var pivot = _paletteRectTransform.pivot;
-            var pixelX = localPoint.x + rect.width * pivot.x - offsetX;
-            var pixelY = localPoint.y + rect.height * pivot.y - offsetY;
-
-
-            if (pixelX < 0 || pixelY < 0 || pixelX > drawWidth || pixelY > drawHeight)
+            if (pixel.x < 0 || pixel.y < 0 || pixel.x > drawWidth || pixel.y > drawHeight)
             {
-                return;
+                return null;
             }
 
-            var uvX = pixelX / drawWidth;
-            var uvY = pixelY / drawHeight;
+            return new Vector2(pixel.x / drawWidth, pixel.y / drawHeight);
+        }
 
-            var texX = (int)(_paletteSpriteRect.x + uvX * _paletteSpriteRect.width);
-            var texY = (int)(_paletteSpriteRect.y + uvY * _paletteSpriteRect.height);
+        private Vector2? GetUVWithoutPreserveAspect(Vector2 localPoint)
+        {
+            var rect = _rectTransform.rect;
+            var pivot = _rectTransform.pivot;
+            var pixel = new Vector2(localPoint.x + rect.width * pivot.x, localPoint.y + rect.height * pivot.y);
 
-            if (!IsInTexture(texX, texY))
+            if (pixel.x < 0 || pixel.y < 0 || pixel.x > rect.width || pixel.y > rect.height)
             {
-                return;
+                return null;
             }
 
-            var targetColor = _texture.GetPixel(texX, texY);
+            return new Vector2(pixel.x / rect.width, pixel.y / rect.height);
+        }
 
-            if (targetColor.a < _colorAlphaTolerance)
-            {
-                return;
-            }
+        private Vector4 FloodFillBounds(Vector2Int texCoords, Color targetColor)
+        {
+            int left = texCoords.x, right = texCoords.x, top = texCoords.y, bottom = texCoords.y;
 
-            var left = texX;
-            var right = texX;
-            var top = texY;
-            var bottom = texY;
-
-            while (left > _paletteSpriteRect.x && ColorsMatch(_texture.GetPixel(left - 1, texY), targetColor)) left--;
-            while (right < _paletteSpriteRect.xMax - 1 && ColorsMatch(_texture.GetPixel(right + 1, texY), targetColor)) right++;
-            while (bottom > _paletteSpriteRect.y && ColorsMatch(_texture.GetPixel(texX, bottom - 1), targetColor)) bottom--;
-            while (top < _paletteSpriteRect.yMax - 1 && ColorsMatch(_texture.GetPixel(texX, top + 1), targetColor)) top++;
+            while (left > _spriteRect.x && ColorsMatch(_texture.GetPixel(left - 1, texCoords.y), targetColor)) left--;
+            while (right < _spriteRect.xMax - 1 && ColorsMatch(_texture.GetPixel(right + 1, texCoords.y), targetColor)) right++;
+            while (bottom > _spriteRect.y && ColorsMatch(_texture.GetPixel(texCoords.x, bottom - 1), targetColor)) bottom--;
+            while (top < _spriteRect.yMax - 1 && ColorsMatch(_texture.GetPixel(texCoords.x, top + 1), targetColor)) top++;
 
             var centerX = (left + right + 1) / 2f;
             var centerY = (bottom + top + 1) / 2f;
-            var cellW = right - left + 1;
-            var cellH = top - bottom + 1;
 
-            var normX = (centerX - _paletteSpriteRect.x) / _paletteSpriteRect.width;
-            var normY = (centerY - _paletteSpriteRect.y) / _paletteSpriteRect.height;
-            var normW = cellW / _paletteSpriteRect.width;
-            var normH = cellH / _paletteSpriteRect.height;
+            var normX = (centerX - _spriteRect.x) / _spriteRect.width;
+            var normY = (centerY - _spriteRect.y) / _spriteRect.height;
 
-            var outlineX = offsetX + normX * drawWidth - rect.width * 0.5f;
-            var outlineY = offsetY + normY * drawHeight - rect.height * 0.5f;
-            var outlineW = normW * drawWidth;
-            var outlineH = normH * drawHeight;
+            var normW = Mathf.Max(1f / _spriteRect.width, (right - left + 1) / _spriteRect.width);
+            var normH = Mathf.Max(1f / _spriteRect.height, (top - bottom + 1) / _spriteRect.height);
 
-            _outline.anchorMin = _outline.anchorMax = _outline.pivot = new (0.5f, 0.5f);
-            _outline.anchoredPosition = new(outlineX, outlineY);
-            _outline.sizeDelta = new(outlineW, outlineH);
-            _outline.gameObject.SetActive(true);
-
-            CurrentSelectedColor = targetColor;
-
-            ColorSelectionChanged?.Invoke(CurrentSelectedColor);
+            return new Vector4(normX, normY, normW, normH);
         }
 
-        private bool IsInTexture(int x, int y)
+        private void DrawOutline(Vector4 bounds, Vector2 uvSpace)
         {
-            return x >= 0 && y >= 0 && x < _texture.width && y < _texture.height;
+            var rect = _rectTransform.rect;
+            var (normX, normY, normW, normH) = (bounds.x, bounds.y, bounds.z, bounds.w);
+            var width = _paletteImage.preserveAspect ? rect.width : rect.width;
+            var height = _paletteImage.preserveAspect ? rect.height : rect.height;
+
+            if (_paletteImage.preserveAspect)
+            {
+                var spriteSize = _spriteRect.size;
+                var spriteRatio = spriteSize.x / spriteSize.y;
+                var rectRatio = rect.width / rect.height;
+
+                if (spriteRatio > rectRatio)
+                {
+                    height = width / spriteRatio;
+                }
+                else
+                {
+                    width = height * spriteRatio;
+                }
+            }
+
+            float offsetX = (_paletteImage.preserveAspect ? (rect.width - width) / 2 : 0);
+            float offsetY = (_paletteImage.preserveAspect ? (rect.height - height) / 2 : 0);
+
+            float outlineX = offsetX + normX * width - rect.width * 0.5f;
+            float outlineY = offsetY + normY * height - rect.height * 0.5f;
+            float outlineW = normW * width;
+            float outlineH = normH * height;
+
+            _outline.anchorMin = _outline.anchorMax = _outline.pivot = CenterPivot;
+            _outline.anchoredPosition = new Vector2(outlineX, outlineY);
+            _outline.sizeDelta = new Vector2(outlineW, outlineH);
+            _outline.gameObject.SetActive(true);
+        }
+
+        private Vector2Int GetTextureCoords(Vector2 uv)
+        {
+            var texX = (int)(_spriteRect.x + uv.x * _spriteRect.width);
+            var texY = (int)(_spriteRect.y + uv.y * _spriteRect.height);
+
+            return new Vector2Int(texX, texY);
+        }
+
+        private bool IsInTexture(Vector2Int coords)
+        {
+            return coords.x >= 0 && coords.y >= 0 && coords.x < _texture.width && coords.y < _texture.height;
         }
 
         private bool ColorsMatch(Color a, Color b)
