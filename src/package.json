@@ -1,6 +1,6 @@
 {
   "name": "com.scaredcrowgames.colorpicker",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "displayName": "Color Picker",
   "description": "A simple and configurable color picker tool for Unity with a palette texture generator",
   "unity": "2021.3",

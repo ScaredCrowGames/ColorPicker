@@ -66,9 +66,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 3626ca420476f72408666b32b356aa2a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7ac11437ca238b942ac113f9dd3caaa8, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -141,7 +141,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -6724901840263831054, guid: 29c53cbfdf8a88b498bfe6e25f414d97, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 47134ed51998ede43b077c49115e63e2, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -160,7 +160,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1193328538569454877}
-  - component: {fileID: 4243846058768794193}
+  - component: {fileID: 4280914195884714538}
   m_Layer: 5
   m_Name: ColorPicker
   m_TagString: Untagged
@@ -188,7 +188,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &4243846058768794193
+--- !u!114 &4280914195884714538
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
