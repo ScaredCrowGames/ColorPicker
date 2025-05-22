@@ -25,6 +25,9 @@ https://github.com/scaredcrowgames/colorpicker.git?path=src
 ```json
 "com.scaredcrowgames.colorpicker": "https://github.com/scaredcrowgames/colorpicker.git?path=src"
 ```
+
+3. Get it from [Unity Asset Store](https://assetstore.unity.com/packages/tools/gui/color-picker-320147)
+
 ## Palette Texture Generator
 Access from the top menu: Tools > ColorPickerGenerator
 
