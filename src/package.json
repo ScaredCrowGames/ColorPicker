@@ -8,10 +8,10 @@
     "name": "Scared Crow Games",
     "email": "scared.crow.games.official@gmail.com"
   },
-  "keywords": [
-    "color",
-	"picker"
-  ],
+  "keywords": ["color", "picker"],
+"documentationUrl": "https://github.com/ScaredCrowGames/UnityColorPicker",
+"changelogUrl": "https://github.com/ScaredCrowGames/UnityColorPicker/releases",
+"licensesUrl": "https://github.com/ScaredCrowGames/UnityColorPicker/blob/main/LICENSE",
   "samples": [
     {
       "displayName": "Color Picker Demo",
