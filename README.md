@@ -40,7 +40,7 @@ Features:
 
 ## Manual setup:
 > [!TIP]
-> You can use ready-to-use prefab from Samples (skip this section if so).
+> Strongly recommend to use ready-to-use prefab from Samples (skip this section if so).
 1. Generate (see above) or import your color palette texture
 2. Create UI image and assign the texture
 3. Create child image (raycast target should be disabled, rect middle-center, size is no matter)
